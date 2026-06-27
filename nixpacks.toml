@@ -1,31 +1,11 @@
-providers = ["php", "node"]
-
-[variables]
-NIXPACKS_PHP_ROOT_DIR = "/"
-
 [phases.setup]
-nixPkgs = [
-  "php82",
-  "php82Extensions.bcmath",
-  "php82Extensions.intl",
-  "php82Extensions.zip",
-  "php82Extensions.pdo_pgsql",
-  "php82Extensions.pgsql",
-  "nodejs_22"
-]
+nixPkgs = ["php82", "php82Extensions.pdo_pgsql", "php82Extensions.intl", "php82Extensions.zip", "nodejs_22"]
 
 [phases.install]
 cmds = [
-  "composer install --no-dev --optimize-autoloader --no-interaction",
-  "npm install"
-]
-
-[phases.build]
-cmds = [
-  "npm run build",
-  "php artisan config:clear || true",
-  "php artisan route:clear || true",
-  "php artisan view:clear || true"
+  "composer install --no-dev --optimize-autoloader",
+  "npm install",
+  "npm run build"
 ]
 
 [start]
