@@ -1,0 +1,9 @@
+{
+  "php": {
+    "extensions": [
+      "intl",
+      "zip",
+      "pdo_pgsql"
+    ]
+  }
+}
