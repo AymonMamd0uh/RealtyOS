@@ -6,6 +6,7 @@ use App\Models\Company;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Plan;
 
 class RegisterCompanyAction
 {
@@ -17,7 +18,17 @@ class RegisterCompanyAction
             'company_code' => strtoupper(Str::random(8)),
             'email'        => $data['email'],
         ]);
+        $plan = isset($data['plan_id'])
+            ? Plan::find($data['plan_id'])
+            : null;
 
+        $plan ??= Plan::where('name', 'Starter')->firstOrFail();
+
+        $company->subscriptions()->create([
+            'plan_id'       => $plan->id,
+            'status'        => 'trial',
+            'trial_ends_at' => now()->addDays($plan->trial_days),
+        ]);
         $user = User::create([
             'company_id' => $company->id,
             'name'       => $data['owner_name'],
@@ -28,7 +39,7 @@ class RegisterCompanyAction
         $user->assignRole('Owner');
 
         Auth::login($user);
-
+        $user->sendEmailVerificationNotification();
         return $user;
     }
     private function generateUniqueSlug(string $name): string

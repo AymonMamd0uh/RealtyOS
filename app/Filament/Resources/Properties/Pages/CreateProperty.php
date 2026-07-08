@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Properties\Pages;
 
 use App\Filament\Resources\Properties\PropertyResource;
-use App\Models\Company;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateProperty extends CreateRecord
@@ -13,6 +13,18 @@ class CreateProperty extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $company = auth()->user()->company;
+
+        if (! $company->canCreateProperty()) {
+
+            Notification::make()
+                ->title('Property limit reached')
+                ->body('You have reached the maximum number of properties allowed by your current subscription plan.')
+                ->danger()
+                ->persistent()
+                ->send();
+
+            $this->halt();
+        }
 
         $lastPropertyCount = $company
             ->properties()

@@ -11,9 +11,9 @@
 
     </div>
 
-    <div class="mx-auto max-w-7xl px-6 pt-24 pb-16">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 pt-16 sm:pt-20 lg:pt-24 pb-16">
 
-        <div class="grid items-center gap-20 lg:grid-cols-2">
+        <div class="grid items-center gap-12 lg:gap-20 lg:grid-cols-2">
 
             <!-- Left -->
 
@@ -27,7 +27,7 @@
                 </span>
 
                 <h1
-                    class="mt-8 text-5xl font-black leading-tight text-slate-900 lg:text-7xl">
+                class="mt-8 text-4xl sm:text-5xl lg:text-7xl font-black leading-tight text-slate-900">
 
                     Everything
 
@@ -46,7 +46,7 @@
                 </h1>
 
                 <p
-                    class="mt-8 max-w-xl text-lg leading-8 text-slate-600">
+                    class="mt-6 max-w-xl text-base sm:text-lg leading-7 sm:leading-8 text-slate-600">
 
                     RealtyOS helps brokers manage properties,
                     leads, agents, follow-ups, reports and sales
@@ -54,17 +54,17 @@
 
                 </p>
 
-                <div class="mt-10 flex flex-wrap gap-4">
+                <div class="mt-10 flex flex-col sm:flex-row gap-4">
 
                     <a href="{{ route('register') }}"
-                        class="rounded-2xl bg-amber-500 px-8 py-4 font-bold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-amber-600">
+                        class="rounded-2xl bg-amber-500 px-6 py-4 text-centerfont-bold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-amber-600">
 
                         Start Free Trial →
 
                     </a>
 
                     <a href="#"
-                        class="rounded-2xl border border-slate-300 bg-white px-8 py-4 font-semibold transition duration-300 hover:bg-slate-100">
+                        class="rounded-2xl border border-slate-300 bg-white px-6 py-4 text-center font-semibold transition duration-300 hover:bg-slate-100">
 
                         Book Demo
 
@@ -75,7 +75,7 @@
                 <!-- Stats -->
 
                 <div
-                    class="mt-14 grid grid-cols-3 gap-6">
+                    class="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-8">
 
                     <div>
 
@@ -131,7 +131,7 @@
 
             <!-- Right -->
 
-            <div>
+            <div class="mt-10 lg:mt-0">
 
                 <div
                     class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
@@ -161,12 +161,12 @@
                     </div>
 
                     <div
-                        class="grid grid-cols-12">
+                        class="grid grid-cols-1 md:grid-cols-12">
 
                         <!-- Sidebar -->
 
                         <div
-                            class="col-span-3 border-r border-slate-200 bg-slate-100 p-5">
+                            class="md:col-span-3 border-r border-slate-200 bg-slate-100 p-5">
 
                             <div
                                 class="mb-8 text-xl font-black">
@@ -220,10 +220,10 @@
                         <!-- Content -->
 
                         <div
-                            class="col-span-9 p-6">
+                            class="md:col-span-9 p-6">
 
                             <div
-                                class="grid gap-4 md:grid-cols-3">
+                                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
                                 <div
                                     class="rounded-2xl bg-slate-100 p-5">
@@ -304,7 +304,7 @@
                                 </div>
 
                                 <div
-                                    class="flex h-48 items-end gap-4">
+                                    class="flex h-40 sm:h-48 items-end gap-4">
 
                                     <div class="w-full rounded-t-xl bg-amber-300" style="height:35%"></div>
                                     <div class="w-full rounded-t-xl bg-amber-400" style="height:55%"></div>

@@ -34,5 +34,18 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'paymob' => [
+
+        'api_key' => env('PAYMOB_API_KEY'),
+
+        'public_key' => env('PAYMOB_PUBLIC_KEY'),
+
+        'secret_key' => env('PAYMOB_SECRET_KEY'),
+
+        'hmac' => env('PAYMOB_HMAC'),
+
+        'card_integration_id' => env('PAYMOB_CARD_INTEGRATION_ID'),
+
+    ],
 
 ];

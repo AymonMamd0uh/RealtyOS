@@ -18,135 +18,79 @@
 
         </div>
 
-        <div class="mt-20 grid gap-8 lg:grid-cols-3">
+<div class="mt-20 grid gap-8 lg:grid-cols-3">
 
-            <!-- Starter -->
+    @foreach ($plans as $plan)
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
+        <div class="
+            relative rounded-3xl p-10 shadow-sm transition hover:-translate-y-1
 
-                <h3 class="text-2xl font-bold">
-                    Starter
-                </h3>
+            {{ $plan->sort_order == 2
+                ? 'border-2 border-amber-500 bg-slate-900 text-white shadow-2xl'
+                : 'border border-slate-200 bg-white'
+            }}
+        ">
 
-                <p class="mt-4 text-slate-500">
-                    Perfect for small agencies.
-                </p>
-
-                <div class="mt-8">
-
-                    <span class="text-5xl font-black">$29</span>
-
-                    <span class="text-slate-500">/month</span>
-
-                </div>
-
-                <ul class="mt-8 space-y-4 text-slate-600">
-
-                    <li>✔ Up to 5 Users</li>
-
-                    <li>✔ Property Management</li>
-
-                    <li>✔ Lead Management</li>
-
-                    <li>✔ Reports</li>
-
-                </ul>
-
-                <a href="#" class="mt-10 block rounded-2xl border border-slate-300 py-4 text-center font-semibold transition hover:bg-slate-100">
-
-                    Start Free Trial
-
-                </a>
-
-            </div>
-
-            <!-- Professional -->
-
-            <div class="relative rounded-3xl border-2 border-amber-500 bg-slate-900 p-10 text-white shadow-2xl">
-
-                <span class="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-amber-500 px-5 py-2 text-sm font-bold">
-
+            @if($plan->sort_order == 2)
+                <span
+                    class="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-amber-500 px-5 py-2 text-sm font-bold text-white">
                     MOST POPULAR
+                </span>
+            @endif
 
+            <h3 class="text-2xl font-bold">
+                {{ $plan->name }}
+            </h3>
+
+            <p class="mt-4 {{ $plan->sort_order == 2 ? 'text-slate-300' : 'text-slate-500' }}">
+                Perfect for your business.
+            </p>
+
+            <div class="mt-8">
+
+                <span class="text-5xl font-black">
+                    ${{ number_format($plan->price, 0) }}
                 </span>
 
-                <h3 class="text-2xl font-bold">
-                    Professional
-                </h3>
-
-                <p class="mt-4 text-slate-300">
-                    Best for growing companies.
-                </p>
-
-                <div class="mt-8">
-
-                    <span class="text-5xl font-black">$79</span>
-
-                    <span class="text-slate-300">/month</span>
-
-                </div>
-
-                <ul class="mt-8 space-y-4 text-slate-300">
-
-                    <li>✔ Unlimited Properties</li>
-
-                    <li>✔ Unlimited Leads</li>
-
-                    <li>✔ Automation</li>
-
-                    <li>✔ Analytics</li>
-
-                    <li>✔ Team Management</li>
-
-                </ul>
-
-                <a href="#" class="mt-10 block rounded-2xl bg-amber-500 py-4 text-center font-bold transition hover:bg-amber-600">
-
-                    Start Free Trial
-
-                </a>
+                <span class="{{ $plan->sort_order == 2 ? 'text-slate-300' : 'text-slate-500' }}">
+                    /month
+                </span>
 
             </div>
 
-            <!-- Enterprise -->
+            <ul class="mt-8 space-y-4 {{ $plan->sort_order == 2 ? 'text-slate-300' : 'text-slate-600' }}">
 
-            <div class="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
+                <li>✔ {{ $plan->max_users }} Users</li>
 
-                <h3 class="text-2xl font-bold">
-                    Enterprise
-                </h3>
+                <li>✔ {{ $plan->max_properties }} Properties</li>
 
-                <p class="mt-4 text-slate-500">
-                    For large organizations.
-                </p>
+                <li>✔ CRM & Leads</li>
 
-                <div class="mt-8">
+                <li>✔ Reports</li>
 
-                    <span class="text-5xl font-black">Custom</span>
+                <li>✔ {{ $plan->trial_days }} Days Free Trial</li>
 
-                </div>
+            </ul>
 
-                <ul class="mt-8 space-y-4 text-slate-600">
+            <a
+                href="{{ route('register', ['plan' => $plan->id]) }}"
+                class="
+                    mt-10 block rounded-2xl py-4 text-center font-bold transition
 
-                    <li>✔ Unlimited Everything</li>
-
-                    <li>✔ Priority Support</li>
-
-                    <li>✔ Dedicated Manager</li>
-
-                    <li>✔ Custom Integrations</li>
-
-                </ul>
-
-                <a href="#" class="mt-10 block rounded-2xl border border-slate-300 py-4 text-center font-semibold transition hover:bg-slate-100">
-
-                    Contact Sales
-
-                </a>
-
-            </div>
+                    {{ $plan->sort_order == 2
+                        ? 'bg-amber-500 text-white hover:bg-amber-600'
+                        : 'border border-slate-300 hover:bg-slate-100'
+                    }}
+                "
+            >
+                Start Free Trial
+            </a>
 
         </div>
+
+    @endforeach
+
+</div>
 
     </div>
 

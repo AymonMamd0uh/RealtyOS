@@ -20,13 +20,20 @@ class RegisterCompanyRequest extends FormRequest
     {
         return [
             'company_name' => ['required', 'string', 'max:255'],
-            'owner_name' => ['required', 'string', 'max:255'],
+            'owner_name'   => ['required', 'string', 'max:255'],
+
             'email' => [
                 'required',
                 'email',
                 Rule::unique('users', 'email'),
             ],
+
             'password' => ['required', 'confirmed', 'min:8'],
+
+            'plan_id' => [
+                'nullable',
+                'exists:plans,id',
+            ],
         ];
     }
 }

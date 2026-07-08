@@ -10,14 +10,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Actions\Auth\RegisterCompanyAction;
+use App\Models\Plan;
 
 class RegisterController extends Controller
 {
     public function create()
     {
-        return view('website.auth.register');
-    }
+        $plan = Plan::find(request('plan'));
 
+        return view('website.auth.register', compact('plan'));
+    }
     public function store(
         RegisterCompanyRequest $request,
         RegisterCompanyAction $registerCompanyAction

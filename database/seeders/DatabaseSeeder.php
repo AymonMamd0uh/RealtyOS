@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Database\Seeders\PlanSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -10,7 +11,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolesAndPermissionsSeeder::class,
-            LocationSeeder::class,
+            PlanSeeder::class,
         ]);
     }
 }

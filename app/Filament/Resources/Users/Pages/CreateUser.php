@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Resources\Users\UserResource;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
@@ -21,7 +22,21 @@ class CreateUser extends CreateRecord
             return $data;
         }
 
-        $data['company_id'] = auth()->user()->company_id;
+        $company = auth()->user()->company;
+
+        if (! $company->canCreateUser()) {
+
+            Notification::make()
+                ->title('User limit reached')
+                ->body('You have reached the maximum number of users allowed by your current subscription plan.')
+                ->danger()
+                ->persistent()
+                ->send();
+
+            $this->halt();
+        }
+
+        $data['company_id'] = $company->id;
 
         return $data;
     }

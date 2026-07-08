@@ -13,7 +13,17 @@
     <p class="mt-3 text-slate-500">
         Start your free trial in less than a minute.
     </p>
-
+    @if($plan)
+    <div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+        <p class="font-semibold text-amber-700">
+            Selected Plan: {{ $plan->name }}
+        </p>
+        <p class="mt-1 text-sm text-slate-600">
+            ${{ number_format($plan->price, 0) }}/month •
+            {{ $plan->trial_days }} Days Free Trial
+        </p>
+    </div>
+@endif
   <form
     action="{{ route('register.store') }}"
     method="POST"
@@ -21,7 +31,10 @@
     class="mt-10 space-y-6">
 
     @csrf
-
+    <input
+    type="hidden"
+    name="plan_id"
+    value="{{ $plan?->id }}">
     <!-- Company Name -->
     <div>
 
