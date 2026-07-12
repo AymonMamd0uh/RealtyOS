@@ -22,7 +22,13 @@ class CompanySettings extends Page
     public Company $company;
 
     public ?array $data = [];
-
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+        ]);
+    }
     public function mount(): void
     {
         $this->company = auth()->user()->company;

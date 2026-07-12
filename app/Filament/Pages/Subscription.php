@@ -24,7 +24,13 @@ class Subscription extends Page
     public int $usersCount = 0;
 
     public int $propertiesCount = 0;
-
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+        ]);
+    }
     public function mount(): void
     {
         $company = auth()->user()->company;
