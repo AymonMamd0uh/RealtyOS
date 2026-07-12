@@ -13,35 +13,49 @@ class CompanySettingsForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(2)
             ->components([
 
                 TextInput::make('name')
-                    ->required(),
+                    ->label('Company Name')
+                    ->required()
+                    ->maxLength(255),
 
                 TextInput::make('company_code')
+                    ->label('Company Code')
                     ->disabled()
                     ->dehydrated(false),
 
                 TextInput::make('email')
-                    ->email(),
+                    ->label('Email')
+                    ->email()
+                    ->maxLength(255),
 
-                TextInput::make('phone'),
+                TextInput::make('phone')
+                    ->label('Phone')
+                    ->tel()
+                    ->maxLength(30),
 
                 TextInput::make('website')
+                    ->label('Website')
                     ->url(),
 
-                ColorPicker::make('primary_color'),
+                ColorPicker::make('primary_color')
+                    ->label('Brand Color'),
 
                 FileUpload::make('logo')
+                    ->label('Company Logo')
                     ->image()
                     ->disk('public')
                     ->directory('company-logos')
                     ->visibility('public')
-                    ->multiple(false)
                     ->imageEditor()
-                    ->imagePreviewHeight('180'),
+                    ->imagePreviewHeight('180')
+                    ->columnSpanFull(),
 
                 Textarea::make('address')
+                    ->label('Address')
+                    ->rows(3)
                     ->columnSpanFull(),
 
             ]);

@@ -22,16 +22,20 @@ class CompanySettings extends Page
     public Company $company;
 
     public ?array $data = [];
+
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole([
+        return auth()->check() && auth()->user()->hasAnyRole([
             'Platform Admin',
             'Owner',
         ]);
     }
+
     public function mount(): void
     {
         $this->company = auth()->user()->company;
+
+        abort_unless($this->company, 404);
 
         $this->form->fill(
             $this->company->toArray()
@@ -46,21 +50,26 @@ class CompanySettings extends Page
 
     public function save(): void
     {
-        $data = $this->form->getState();
-
-        $this->company->update($data);
+        $this->company->update(
+            $this->form->getState()
+        );
 
         Notification::make()
-            ->title('Company updated successfully.')
+            ->title('Company settings updated successfully.')
             ->success()
             ->send();
     }
+
     protected function getHeaderActions(): array
     {
         return [
+
             Action::make('save')
                 ->label('Save Changes')
-                ->action('save'),
+                ->icon('heroicon-o-check')
+                ->color('primary')
+                ->submit('save'),
+
         ];
     }
 }

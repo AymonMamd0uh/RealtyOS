@@ -1,50 +1,61 @@
 <x-filament-panels::page>
 
-    <div class="grid gap-6 lg:grid-cols-3">
+    <div class="grid gap-6 xl:grid-cols-3">
 
-        {{-- Current Plan --}}
+        {{-- Current Subscription --}}
         <x-filament::section>
 
             <x-slot name="heading">
                 Current Subscription
             </x-slot>
 
-            <div class="space-y-4">
+            <x-slot name="description">
+                Your active subscription details.
+            </x-slot>
 
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Current Plan</span>
-                    <strong>{{ $currentPlan?->name }}</strong>
-                </div>
+            <div class="space-y-5">
 
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Status</span>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">
+                        Plan
+                    </span>
 
-                    <span class="font-semibold text-success-600">
-                        {{ ucfirst($subscription?->status) }}
+                    <span class="rounded-lg bg-primary-50 px-3 py-1 text-sm font-semibold text-primary-600">
+                        {{ $currentPlan?->name ?? 'No Plan' }}
                     </span>
                 </div>
 
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Trial Ends</span>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">
+                        Status
+                    </span>
+
+                    <span @class([
+                        'rounded-lg px-3 py-1 text-sm font-semibold',
+                        'bg-success-100 text-success-700' => $subscription?->status === 'active',
+                        'bg-danger-100 text-danger-700' => $subscription?->status !== 'active',
+                    ])>
+                        {{ ucfirst($subscription?->status ?? 'Inactive') }}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">
+                        Trial Ends
+                    </span>
 
                     <strong>
-
-                        {{ $subscription?->trial_ends_at?->format('d M Y') }}
-
+                        {{ $subscription?->trial_ends_at?->format('d M Y') ?? 'Lifetime' }}
                     </strong>
                 </div>
 
-                <div class="flex justify-between">
-                    <span class="text-gray-500">
-
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">
                         Days Remaining
-
                     </span>
 
-                    <strong>
-
+                    <strong class="text-lg">
                         {{ $daysRemaining }}
-
                     </strong>
                 </div>
 
@@ -56,16 +67,22 @@
         <x-filament::section>
 
             <x-slot name="heading">
-                Usage
+                Resource Usage
             </x-slot>
 
-            <div class="space-y-6">
+            <x-slot name="description">
+                Current usage for your subscription.
+            </x-slot>
+
+            <div class="space-y-8">
 
                 <div>
 
-                    <div class="mb-2 flex justify-between">
+                    <div class="mb-2 flex items-center justify-between">
 
-                        <span>Users</span>
+                        <span class="font-medium">
+                            Users
+                        </span>
 
                         <strong>
 
@@ -73,25 +90,27 @@
 
                             /
 
-                            {{ $currentPlan?->max_users == -1 ? '∞' : $currentPlan?->max_users }}
+                            {{ $currentPlan?->max_users == -1 ? 'Unlimited' : $currentPlan?->max_users }}
 
                         </strong>
 
                     </div>
 
                     <progress
-                        class="w-full"
+                        class="progress progress-primary w-full"
                         value="{{ $usersCount }}"
-                        max="{{ $currentPlan?->max_users == -1 ? 1 : $currentPlan?->max_users }}">
+                        max="{{ $currentPlan?->max_users == -1 ? max($usersCount,1) : $currentPlan?->max_users }}">
                     </progress>
 
                 </div>
 
                 <div>
 
-                    <div class="mb-2 flex justify-between">
+                    <div class="mb-2 flex items-center justify-between">
 
-                        <span>Properties</span>
+                        <span class="font-medium">
+                            Properties
+                        </span>
 
                         <strong>
 
@@ -99,16 +118,16 @@
 
                             /
 
-                            {{ $currentPlan?->max_properties == -1 ? '∞' : $currentPlan?->max_properties }}
+                            {{ $currentPlan?->max_properties == -1 ? 'Unlimited' : $currentPlan?->max_properties }}
 
                         </strong>
 
                     </div>
 
                     <progress
-                        class="w-full"
+                        class="progress progress-warning w-full"
                         value="{{ $propertiesCount }}"
-                        max="{{ $currentPlan?->max_properties == -1 ? 1 : $currentPlan?->max_properties }}">
+                        max="{{ $currentPlan?->max_properties == -1 ? max($propertiesCount,1) : $currentPlan?->max_properties }}">
                     </progress>
 
                 </div>
@@ -124,78 +143,92 @@
                 Available Plans
             </x-slot>
 
+            <x-slot name="description">
+                Upgrade or change your subscription.
+            </x-slot>
+
             <div class="space-y-4">
 
                 @foreach($this->plans() as $plan)
 
-                    <div class="rounded-xl border p-4">
+                    <div class="rounded-xl border p-5 transition hover:shadow-lg">
 
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-start justify-between">
 
-                            <h3 class="font-bold">
+                            <div>
 
-                                {{ $plan->name }}
+                                <h3 class="text-lg font-bold">
+                                    {{ $plan->name }}
+                                </h3>
 
-                            </h3>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {{ $plan->trial_days }} Days Free Trial
+                                </p>
 
-                            <span class="text-lg font-bold">
+                            </div>
 
-                                ${{ number_format($plan->price,0) }}
+                            <div class="text-right">
 
-                            </span>
+                                <div class="text-2xl font-bold">
+                                    ${{ number_format($plan->price,0) }}
+                                </div>
+
+                                <div class="text-xs text-gray-500">
+                                    / Month
+                                </div>
+
+                            </div>
 
                         </div>
 
-                        <div class="mt-3 space-y-1 text-sm text-gray-600">
+                        <div class="mt-5 space-y-2 text-sm">
 
                             <div>
-
+                                👥
                                 {{ $plan->max_users == -1 ? 'Unlimited Users' : $plan->max_users.' Users' }}
-
                             </div>
 
                             <div>
-
+                                🏠
                                 {{ $plan->max_properties == -1 ? 'Unlimited Properties' : $plan->max_properties.' Properties' }}
-
-                            </div>
-
-                            <div>
-
-                                {{ $plan->trial_days }} Days Trial
-
                             </div>
 
                         </div>
 
                         @if($currentPlan?->id != $plan->id)
-                        <form
-                            method="POST"
-                            action="{{ route('subscription.checkout') }}">
 
-                            @csrf
+                            <form
+                                method="POST"
+                                action="{{ route('subscription.checkout') }}"
+                                class="mt-5">
 
-                            <input
-                                type="hidden"
-                                name="plan"
-                                value="{{ $plan->id }}">
+                                @csrf
 
-                            <button
-                                type="submit"
-                                class="mt-4 w-full rounded-lg bg-amber-500 py-2 text-white">
+                                <input
+                                    type="hidden"
+                                    name="plan"
+                                    value="{{ $plan->id }}">
 
-                                Upgrade
+                                <x-filament::button
+                                    type="submit"
+                                    color="primary"
+                                    class="w-full">
 
-                            </button>
+                                    Upgrade Plan
 
-                        </form>
+                                </x-filament::button>
+
+                            </form>
+
                         @else
 
-                            <div class="mt-4 rounded-lg bg-green-100 py-2 text-center font-semibold text-green-700">
+                            <x-filament::badge
+                                color="success"
+                                class="mt-5">
 
                                 Current Plan
 
-                            </div>
+                            </x-filament::badge>
 
                         @endif
 

@@ -7,10 +7,13 @@ use Filament\Widgets\ChartWidget;
 
 class LeadsChart extends ChartWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 4;
 
     protected int|string|array $columnSpan = 'full';
-    protected ?string $heading = 'Leads Per Month';
+
+    protected ?string $heading = 'Monthly Leads';
+
+    protected ?string $description = 'Lead creation trend for the current year';
 
     protected function getData(): array
     {
@@ -18,23 +21,21 @@ class LeadsChart extends ChartWidget
 
         $query = Lead::query();
 
-        if (! $user->hasRole('Platform Admin')) {
+        if ($user->hasRole('Agent')) {
+            $query->where('assigned_to', $user->id);
+        } elseif (! $user->hasRole('Platform Admin')) {
             $query->where('company_id', $user->company_id);
         }
 
-        if ($user->hasRole('Agent')) {
-            $query->where('assigned_to', $user->id);
-        }
-
         $leads = $query
-            ->selectRaw('EXTRACT(MONTH FROM created_at)::integer as month')
-            ->selectRaw('COUNT(*) as total')
+            ->selectRaw('EXTRACT(MONTH FROM created_at)::integer AS month')
+            ->selectRaw('COUNT(*) AS total')
             ->whereYear('created_at', now()->year)
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month');
 
-        $months = [
+        $labels = [
             'Jan',
             'Feb',
             'Mar',
@@ -51,8 +52,8 @@ class LeadsChart extends ChartWidget
 
         $data = [];
 
-        for ($i = 1; $i <= 12; $i++) {
-            $data[] = $leads[$i] ?? 0;
+        foreach (range(1, 12) as $month) {
+            $data[] = $leads[$month] ?? 0;
         }
 
         return [
@@ -60,15 +61,23 @@ class LeadsChart extends ChartWidget
                 [
                     'label' => 'Leads',
                     'data' => $data,
+                    'fill' => true,
+                    'tension' => 0.35,
+                    'borderWidth' => 3,
                 ],
             ],
 
-            'labels' => $months,
+            'labels' => $labels,
         ];
     }
 
     protected function getType(): string
     {
         return 'line';
+    }
+
+    protected function getMaxHeight(): ?string
+    {
+        return '320px';
     }
 }

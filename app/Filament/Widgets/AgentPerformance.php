@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AgentPerformance extends TableWidget
 {
-    protected static ?string $heading = 'Agent Performance';
+    protected static ?string $heading = 'Top Performing Agents';
+
+    protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
-    protected static ?int $sort = 4;
+
     public function table(Table $table): Table
     {
         return $table
@@ -23,13 +25,10 @@ class AgentPerformance extends TableWidget
                 $query = User::query()
                     ->role('Agent')
                     ->withCount('leads')
-
                     ->withCount([
-                        'leads as won_leads_count' => fn($query) =>
-                        $query->where('status', LeadStatus::WON),
+                        'leads as won_leads_count' => fn ($query) => $query->where('status', LeadStatus::WON),
 
-                        'leads as lost_leads_count' => fn($query) =>
-                        $query->where('status', LeadStatus::LOST),
+                        'leads as lost_leads_count' => fn ($query) => $query->where('status', LeadStatus::LOST),
                     ]);
 
                 if (! auth()->user()->hasRole('Platform Admin')) {
@@ -39,40 +38,79 @@ class AgentPerformance extends TableWidget
                     );
                 }
 
-                return $query;
+                return $query
+                    ->orderByDesc('won_leads_count')
+                    ->orderByDesc('leads_count');
             })
+
+            ->defaultSort('won_leads_count', 'desc')
+
+            ->paginated([10, 25, 50])
+
+            ->striped()
 
             ->columns([
 
                 TextColumn::make('name')
                     ->label('Agent')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
 
                 TextColumn::make('leads_count')
-                    ->label('Total Leads')
+                    ->label('Leads')
+                    ->badge()
+                    ->color('primary')
                     ->sortable(),
 
                 TextColumn::make('won_leads_count')
                     ->label('Won')
+                    ->badge()
+                    ->color('success')
                     ->sortable(),
 
                 TextColumn::make('lost_leads_count')
                     ->label('Lost')
+                    ->badge()
+                    ->color('danger')
                     ->sortable(),
 
                 TextColumn::make('conversion_rate')
-                    ->label('Conversion %')
+                    ->label('Conversion')
+                    ->badge()
+                    ->color(function ($record) {
+
+                        if ($record->leads_count === 0) {
+                            return 'gray';
+                        }
+
+                        $rate = ($record->won_leads_count / $record->leads_count) * 100;
+
+                        return match (true) {
+                            $rate >= 70 => 'success',
+                            $rate >= 40 => 'warning',
+                            default => 'danger',
+                        };
+                    })
                     ->state(function ($record) {
 
-                        if ($record->leads_count == 0) {
+                        if ($record->leads_count === 0) {
                             return '0%';
                         }
 
                         return round(
                             ($record->won_leads_count / $record->leads_count) * 100,
-                            2
+                            1
                         ) . '%';
-                    }),
-            ]);
+                    })
+                    ->sortable(),
+
+            ])
+
+            ->emptyStateHeading('No agents found')
+
+            ->emptyStateDescription('No agents have been added yet.')
+
+            ->emptyStateIcon('heroicon-o-users');
     }
 }

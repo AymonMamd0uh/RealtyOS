@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+
             ->discoverResources(
                 in: app_path('Filament/Resources'),
                 for: 'App\\Filament\\Resources'
@@ -57,10 +58,6 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\CompanyOverview::class,
                 \App\Filament\Widgets\FollowUpStats::class,
                 \App\Filament\Widgets\StatsOverview::class,
-                \App\Filament\Widgets\LeadStats::class,
-                \App\Filament\Widgets\LeadsChart::class,
-                \App\Filament\Widgets\AgentPerformance::class,
-                \App\Filament\Widgets\ConversionRate::class,
             ])
             ->middleware([
                 EncryptCookies::class,
