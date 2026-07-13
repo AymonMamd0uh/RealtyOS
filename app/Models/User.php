@@ -5,7 +5,8 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Traits\HasRoles;
@@ -13,7 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Property;
 use App\Models\Lead;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-class User extends Authenticatable implements MustVerifyEmail
+
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasFactory, Notifiable, HasRoles;
 
@@ -61,5 +63,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class, 'assigned_to');
+    }
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($this->hasRole('Platform Admin')) {
+            return true;
+        }
+
+        return $this->is_active
+            && $this->hasVerifiedEmail();
     }
 }
