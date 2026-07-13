@@ -8,45 +8,45 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subscription extends Model
 {
-   protected $fillable = [
+    protected $fillable = [
 
-    'company_id',
+        'company_id',
 
-    'plan_id',
+        'plan_id',
+        'pending_plan_id',
+        'status',
 
-    'status',
+        'trial_ends_at',
 
-    'trial_ends_at',
+        'starts_at',
 
-    'starts_at',
+        'ends_at',
 
-    'ends_at',
+        'cancelled_at',
 
-    'cancelled_at',
+        'provider',
 
-    'provider',
+        'provider_subscription_id',
 
-    'provider_subscription_id',
+        'merchant_order_id',
 
-    'merchant_order_id',
+        'provider_transaction_id',
 
-    'provider_transaction_id',
+        'provider_order_id',
 
-    'provider_order_id',
+        'provider_intention_id',
 
-    'provider_intention_id',
+        'paid_amount',
 
-    'paid_amount',
+        'paid_currency',
 
-    'paid_currency',
+        'paid_at',
 
-    'paid_at',
+        'is_lifetime',
 
-    'is_lifetime',
+        'notes',
 
-    'notes',
-
-];
+    ];
 
     protected $casts = [
 
@@ -69,8 +69,14 @@ class Subscription extends Model
     {
         return $this->belongsTo(Plan::class);
     }
-public function paymentTransactions(): HasMany
-{
-    return $this->hasMany(PaymentTransaction::class);
-}
+    public function paymentTransactions(): HasMany
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
+
+    public function pendingPlan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class, 'pending_plan_id');
+    }
 }

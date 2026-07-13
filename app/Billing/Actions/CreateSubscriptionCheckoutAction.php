@@ -29,11 +29,8 @@ class CreateSubscriptionCheckoutAction
         $merchantOrderId = (string) Str::uuid();
 
         $subscription->update([
-
-            'plan_id' => $plan->id,
-
+            'pending_plan_id' => $plan->id,
             'merchant_order_id' => $merchantOrderId,
-
         ]);
 
         $response = $this->paymob->createIntention([

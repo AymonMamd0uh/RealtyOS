@@ -169,13 +169,13 @@
 
                             <div class="text-right">
 
-                                <div class="text-2xl font-bold">
-                                    ${{ number_format($plan->price,0) }}
-                                </div>
+                        <div class="text-2xl font-bold text-primary-600">
+                            EGP {{ number_format($plan->price, 0) }}
+                        </div>
 
-                                <div class="text-xs text-gray-500">
-                                    / Month
-                                </div>
+                        <div class="text-xs text-gray-500">
+                            Per Month
+                        </div>
 
                             </div>
 
@@ -195,7 +195,7 @@
 
                         </div>
 
-                        @if($currentPlan?->id != $plan->id)
+                        @if(!$currentPlan || $currentPlan->id !== $plan->id)
 
                             <form
                                 method="POST"

@@ -12,9 +12,9 @@ class PlanSeeder extends Seeder
         Plan::updateOrCreate(
             ['name' => 'Starter'],
             [
-                'price' => 20,
-                'max_users' => 10,
-                'max_properties' => 500,
+                'price' => 999,
+                'max_users' => 5,
+                'max_properties' => 300,
                 'trial_days' => 14,
                 'is_active' => true,
                 'sort_order' => 1,
@@ -24,9 +24,9 @@ class PlanSeeder extends Seeder
         Plan::updateOrCreate(
             ['name' => 'Professional'],
             [
-                'price' => 60,
-                'max_users' => 50,
-                'max_properties' => 1500,
+                'price' => 1999,
+                'max_users' => 15,
+                'max_properties' => 2000,
                 'trial_days' => 14,
                 'is_active' => true,
                 'sort_order' => 2,
@@ -34,11 +34,11 @@ class PlanSeeder extends Seeder
         );
 
         Plan::updateOrCreate(
-            ['name' => 'Enterprise'],
+            ['name' => 'Business'],
             [
-                'price' => 100,
-                'max_users' => -1,
-                'max_properties' => -1,
+                'price' => 3499,
+                'max_users' => 50,
+                'max_properties' => 10000,
                 'trial_days' => 14,
                 'is_active' => true,
                 'sort_order' => 3,

@@ -106,6 +106,10 @@ class HandlePaymobWebhookAction
 
             $subscription->update([
 
+                'plan_id' => $subscription->pending_plan_id,
+
+                'pending_plan_id' => null,
+
                 'status' => 'active',
 
                 'provider' => 'paymob',
@@ -120,20 +124,12 @@ class HandlePaymobWebhookAction
 
                 'paid_at' => $paidAt,
 
-                /*
-                 * لو الاشتراك منتهى أو Trial
-                 * يبدأ من الآن.
-                 *
-                 * لو الاشتراك مازال Active
-                 * يتم تمديده شهر.
-                 */
-
                 'starts_at' => $subscription->starts_at ?: now(),
 
                 'ends_at' => $subscription->ends_at &&
                     $subscription->ends_at->isFuture()
-                        ? $subscription->ends_at->copy()->addMonth()
-                        : now()->addMonth(),
+                    ? $subscription->ends_at->copy()->addMonth()
+                    : now()->addMonth(),
 
             ]);
         });
