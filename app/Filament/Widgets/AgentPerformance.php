@@ -103,7 +103,6 @@ class AgentPerformance extends TableWidget
                             1
                         ) . '%';
                     })
-                    ->sortable(),
 
             ])
 
