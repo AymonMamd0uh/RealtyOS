@@ -26,7 +26,6 @@ class CompanySettings extends Page
     public static function canAccess(): bool
     {
         return auth()->check() && auth()->user()->hasAnyRole([
-            'Platform Admin',
             'Owner',
         ]);
     }

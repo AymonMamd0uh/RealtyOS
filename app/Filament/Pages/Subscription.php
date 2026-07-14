@@ -27,7 +27,6 @@ class Subscription extends Page
     public static function canAccess(): bool
     {
         return auth()->user()->hasAnyRole([
-            'Platform Admin',
             'Owner',
         ]);
     }
