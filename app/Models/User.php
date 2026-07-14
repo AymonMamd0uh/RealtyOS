@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Property;
 use App\Models\Lead;
+use App\Models\Property;
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-class User extends Authenticatable implements MustVerifyEmail
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasFactory, Notifiable, HasRoles;
 
@@ -45,10 +47,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo(Company::class);
     }
+
     public function leadActivities(): HasMany
     {
         return $this->hasMany(LeadActivity::class);
     }
+
     public function properties(): HasMany
     {
         return $this->hasMany(Property::class);
@@ -58,8 +62,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Lead::class, 'assigned_to');
     }
+
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class, 'assigned_to');
     }
+
+public function canAccessPanel(Panel $panel): bool
+{
+    return $this->is_active;
+}
 }
