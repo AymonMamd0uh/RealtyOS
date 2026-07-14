@@ -68,8 +68,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->hasMany(Lead::class, 'assigned_to');
     }
 
-public function canAccessPanel(Panel $panel): bool
-{
-    return $this->is_active;
-}
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->is_active
+            && $this->roles()->exists();
+    }
 }
