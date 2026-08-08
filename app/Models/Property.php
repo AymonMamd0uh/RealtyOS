@@ -21,7 +21,9 @@ class Property extends Model
 
         'title',
         'description',
-
+        'owner_name',
+        'owner_phone',
+        'owner_email',
         'property_type',
         'listing_type',
 
@@ -29,7 +31,9 @@ class Property extends Model
         'area_id',
         'compound_id',
         'stage_id',
-
+        'group_name',
+        'building_number',
+        'unit_number',
         'price',
 
         'built_area',
@@ -43,6 +47,7 @@ class Property extends Model
         'is_furnished',
 
         'status',
+        'internal_notes',
     ];
     protected function casts(): array
     {
@@ -85,7 +90,8 @@ class Property extends Model
     }
     public function images(): HasMany
     {
-        return $this->hasMany(PropertyImage::class);
+        return $this->hasMany(PropertyImage::class)
+            ->orderBy('sort_order');
     }
     public function coverImage(): HasOne
     {
@@ -95,5 +101,32 @@ class Property extends Model
     public function features(): BelongsToMany
     {
         return $this->belongsToMany(Feature::class);
+    }
+    public function canViewInternalInformation($user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->hasRole('Platform Admin')) {
+            return true;
+        }
+
+        if (
+            $user->hasRole('Owner') ||
+            $user->hasRole('Super Admin')
+        ) {
+            return $user->company_id === $this->company_id;
+        }
+
+        if ($user->hasRole('Manager')) {
+            return $user->company_id === $this->company_id;
+        }
+
+        if ($user->hasRole('Agent')) {
+            return $this->user_id === $user->id;
+        }
+
+        return false;
     }
 }

@@ -6,6 +6,7 @@ use App\Models\PaymentTransaction;
 use App\Models\Subscription;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Events\SubscriptionRenewed;
 
 class HandlePaymobWebhookAction
 {
@@ -103,7 +104,9 @@ class HandlePaymobWebhookAction
             | Activate Subscription
             |--------------------------------------------------------------------------
             */
-
+            $wasRenewal = $subscription->status === 'active'
+                && $subscription->ends_at
+                && $subscription->ends_at->isFuture();
             $subscription->update([
 
                 'plan_id' => $subscription->pending_plan_id,
@@ -130,8 +133,13 @@ class HandlePaymobWebhookAction
                     $subscription->ends_at->isFuture()
                     ? $subscription->ends_at->copy()->addMonth()
                     : now()->addMonth(),
+                'subscription_expiring_notified_at' => null,
+                'subscription_expired_notified_at' => null,
 
             ]);
+            if ($wasRenewal) {
+                SubscriptionRenewed::dispatch($subscription->fresh());
+            }
         });
     }
 }

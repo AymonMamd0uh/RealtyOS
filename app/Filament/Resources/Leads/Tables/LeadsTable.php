@@ -11,8 +11,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Exports\LeadExporter;
-use Filament\Actions\ExportAction;
 use App\Enums\LeadStatus;
 use Filament\Actions\Action;
 use App\Models\LeadActivity;
@@ -205,8 +203,24 @@ class LeadsTable
             ])
 
             ->toolbarActions([
-                ExportAction::make()
-                    ->exporter(LeadExporter::class),
+                Action::make('export')
+                    ->label('Export')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->url(function ($livewire) {
+                        $filters = $livewire->tableFilters ?? [];
+
+                        return route('leads.export.direct', [
+                            'search' => $livewire->tableSearch ?? null,
+
+                            'status' => $filters['status']['status'] ?? null,
+
+                            'agent_id' => $filters['agent']['agent_id'] ?? null,
+
+                            'source' => $filters['source']['source'] ?? null,
+                        ]);
+                    })
+                    ->openUrlInNewTab(),
 
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

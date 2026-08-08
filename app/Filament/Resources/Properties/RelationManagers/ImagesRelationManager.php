@@ -16,6 +16,8 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Services\ImageOptimizationService;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ImagesRelationManager extends RelationManager
 {
@@ -27,8 +29,15 @@ class ImagesRelationManager extends RelationManager
             ->components([
                 FileUpload::make('image')
                     ->image()
-                    ->disk('public')
-                    ->directory('properties')
+                    ->required()
+                    ->saveUploadedFileUsing(
+                        function (
+                            TemporaryUploadedFile $file,
+                            ImageOptimizationService $optimizer
+                        ) {
+                            return $optimizer->optimize($file);
+                        }
+                    )
                     ->required(),
 
                 TextInput::make('sort_order')
@@ -68,9 +77,15 @@ class ImagesRelationManager extends RelationManager
                         FileUpload::make('images')
                             ->multiple()
                             ->image()
-                            ->disk('public')
-                            ->directory('properties')
-                            ->required(),
+                            ->required()
+                            ->saveUploadedFileUsing(
+                                function (
+                                    TemporaryUploadedFile $file,
+                                    ImageOptimizationService $optimizer
+                                ) {
+                                    return $optimizer->optimize($file);
+                                }
+                            ),
                     ])
                     ->action(function (array $data): void {
 

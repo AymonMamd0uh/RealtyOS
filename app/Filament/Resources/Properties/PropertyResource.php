@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\Properties\Pages\ViewProperty;
 
 class PropertyResource extends Resource
 {
@@ -47,6 +48,7 @@ class PropertyResource extends Resource
         return [
             'index' => ListProperties::route('/'),
             'create' => CreateProperty::route('/create'),
+            'view' => ViewProperty::route('/{record}/view'),
             'edit' => EditProperty::route('/{record}/edit'),
         ];
     }

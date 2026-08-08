@@ -16,16 +16,14 @@ class VerifyEmailController extends Controller
 
         return view('website.auth.verify-email');
     }
+public function verify(EmailVerificationRequest $request)
+{
+    $request->fulfill();
 
-    public function verify(EmailVerificationRequest $request)
-    {
-        $request->fulfill();
+    session()->put('just_verified', true);
 
-        return redirect()
-            ->route('dashboard')
-            ->with('success', 'Email verified successfully.');
-    }
-
+    return redirect()->route('dashboard');
+}
     public function send(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
@@ -34,6 +32,9 @@ class VerifyEmailController extends Controller
 
         $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('status', 'Verification link sent successfully.');
+        return back()->with(
+            'status',
+            'Verification link sent successfully.'
+        );
     }
 }

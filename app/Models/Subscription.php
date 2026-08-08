@@ -57,6 +57,8 @@ class Subscription extends Model
         'ends_at' => 'datetime',
 
         'cancelled_at' => 'datetime',
+        'subscription_expiring_notified_at' => 'datetime',
+        'subscription_expired_notified_at' => 'datetime',
         'is_lifetime' => 'boolean',
     ];
 

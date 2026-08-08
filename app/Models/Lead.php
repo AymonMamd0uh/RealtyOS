@@ -40,6 +40,8 @@ class Lead extends Model
 
         'next_follow_up_at',
         'follow_up_completed',
+        'follow_up_due_notified_at',
+        'follow_up_overdue_notified_at',
     ];
 
     protected function casts(): array
@@ -52,6 +54,8 @@ class Lead extends Model
 
             'next_follow_up_at' => 'datetime',
             'follow_up_completed' => 'boolean',
+            'follow_up_due_notified_at' => 'datetime',
+            'follow_up_overdue_notified_at' => 'datetime',
         ];
     }
 

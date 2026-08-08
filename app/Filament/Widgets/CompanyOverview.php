@@ -12,7 +12,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class CompanyOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 0;
-protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
     protected function getStats(): array
     {
         $user = auth()->user();
@@ -62,7 +62,15 @@ protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {
-        return auth()->check()
-            && ! auth()->user()->hasRole('Platform Admin');
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+            'Super Admin',
+            'Manager',
+        ]);
     }
 }

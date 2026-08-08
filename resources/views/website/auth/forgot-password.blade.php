@@ -7,21 +7,19 @@
 <div>
 
     <h2 class="text-4xl font-black text-slate-900">
-
         Forgot Password
-
     </h2>
 
     <p class="mt-3 text-slate-500">
-
         Enter your email address and we'll send you a password reset link.
-
     </p>
-@if (session('status'))
-    <div class="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-        {{ session('status') }}
-    </div>
-@endif
+
+    @if (session('status'))
+        <div class="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+            {{ session('status') }}
+        </div>
+    @endif
+
     <form
         action="{{ route('password.email') }}"
         method="POST"
@@ -44,7 +42,16 @@
                 name="email"
                 type="email"
                 value="{{ old('email') }}"
+                required
+                autofocus
+                autocomplete="email"
                 class="w-full rounded-2xl border border-slate-300 px-5 py-4 outline-none transition focus:border-amber-500">
+
+            @error('email')
+                <p class="mt-2 text-sm text-red-600">
+                    {{ $message }}
+                </p>
+            @enderror
 
         </div>
 

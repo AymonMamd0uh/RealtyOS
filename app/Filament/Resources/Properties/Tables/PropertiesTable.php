@@ -9,8 +9,17 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\ImageColumn;
-use App\Filament\Exports\PropertyExporter;
-use Filament\Actions\ExportAction;
+
+use Filament\Actions\Action;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Support\Enums\FontWeight;
+use Filament\Infolists\Components\RepeatableEntry;
+use App\Filament\Resources\Properties\Infolists\PropertyInfolist;
+use App\Filament\Resources\Properties\PropertyResource;
 
 class PropertiesTable
 {
@@ -18,10 +27,7 @@ class PropertiesTable
     {
         return $table
             ->columns([
-                ImageColumn::make('coverImage.image')
-                    ->label('Image')
-                    ->disk('public')
-                    ->square(),
+
                 TextColumn::make('reference_number')
                     ->label('Ref')
                     ->searchable()
@@ -51,12 +57,12 @@ class PropertiesTable
                 TextColumn::make('listing_type')
                     ->badge(),
 
-                TextColumn::make('city.name')
-                    ->label('City')
+                TextColumn::make('compound.name')
+                    ->label('Compound')
                     ->sortable(),
 
-                TextColumn::make('area.name')
-                    ->label('Area')
+                TextColumn::make('stage.name')
+                    ->label('Stage')
                     ->sortable(),
 
                 TextColumn::make('price')
@@ -135,11 +141,44 @@ class PropertiesTable
                     ]),
             ])
             ->recordActions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->url(
+                        fn($record) => PropertyResource::getUrl('view', [
+                            'record' => $record,
+                        ])
+                    ),
                 EditAction::make(),
+
             ])
             ->toolbarActions([
-                ExportAction::make()
-                    ->exporter(PropertyExporter::class),
+                Action::make('export')
+                    ->label('Export')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->url(function ($livewire) {
+                        $filters = $livewire->tableFilters ?? [];
+
+                        return route('properties.export.direct', [
+                            'search' => $livewire->tableSearch ?? null,
+
+                            'city_id' => $filters['city_id']['value'] ?? null,
+
+                            'area_id' => $filters['area_id']['value'] ?? null,
+
+                            'compound_id' => $filters['compound_id']['value'] ?? null,
+
+                            'user_id' => $filters['user_id']['value'] ?? null,
+
+                            'property_type' => $filters['property_type']['value'] ?? null,
+
+                            'listing_type' => $filters['listing_type']['value'] ?? null,
+
+                            'status' => $filters['status']['value'] ?? null,
+                        ]);
+                    })
+                    ->openUrlInNewTab(),
 
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

@@ -26,9 +26,9 @@ class AgentPerformance extends TableWidget
                     ->role('Agent')
                     ->withCount('leads')
                     ->withCount([
-                        'leads as won_leads_count' => fn ($query) => $query->where('status', LeadStatus::WON),
+                        'leads as won_leads_count' => fn($query) => $query->where('status', LeadStatus::WON),
 
-                        'leads as lost_leads_count' => fn ($query) => $query->where('status', LeadStatus::LOST),
+                        'leads as lost_leads_count' => fn($query) => $query->where('status', LeadStatus::LOST),
                     ]);
 
                 if (! auth()->user()->hasRole('Platform Admin')) {
@@ -111,5 +111,18 @@ class AgentPerformance extends TableWidget
             ->emptyStateDescription('No agents have been added yet.')
 
             ->emptyStateIcon('heroicon-o-users');
+    }
+    public static function canView(): bool
+    {
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+            'Super Admin',
+            'Manager',
+        ]);
     }
 }

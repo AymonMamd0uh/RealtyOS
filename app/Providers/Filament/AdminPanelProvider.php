@@ -2,9 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Widgets\TopAgents;
-use App\Filament\Widgets\LeadStats;
-use App\Filament\Widgets\StatsOverview;
 use App\Http\Middleware\AuthenticateFilament;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,9 +16,10 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Widgets\ConversionRate;
-use Filament\Support\Assets\Css;
 use App\Http\Middleware\EnsureActiveSubscription;
+use App\Livewire\NotificationBell;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Vite;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,7 +32,14 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/realtyos-logo.png'))
             ->brandLogoHeight('4rem')
             ->path('admin')
-            ->login()
+            ->login(false)
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn() => new \Illuminate\Support\HtmlString(
+                    '<script type="module" src="' . Vite::asset('resources/js/app.js') . '"></script>'
+                ),
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -56,9 +61,16 @@ class AdminPanelProvider extends PanelProvider
             )
             ->widgets([
                 \App\Filament\Widgets\CompanyOverview::class,
+                \App\Filament\Widgets\QuickActions::class,
+                \App\Filament\Widgets\RecentProperties::class,
+                \App\Filament\Widgets\RecentLeads::class,
                 \App\Filament\Widgets\FollowUpStats::class,
                 \App\Filament\Widgets\StatsOverview::class,
             ])
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_END,
+                fn() => view('filament.components.notification-bell'),
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -72,6 +84,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 AuthenticateFilament::class,
+                \App\Http\Middleware\EnsureEmailIsVerified::class,
                 EnsureActiveSubscription::class,
             ]);
     }

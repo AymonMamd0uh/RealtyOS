@@ -40,8 +40,16 @@
                 id="email"
                 name="email"
                 type="email"
-                value="{{ request('email') }}"
-                class="w-full rounded-2xl border border-slate-300 px-5 py-4">
+                value="{{ old('email', request('email')) }}"
+                required
+                autocomplete="email"
+                class="w-full rounded-2xl border border-slate-300 px-5 py-4 outline-none transition focus:border-amber-500">
+
+            @error('email')
+                <p class="mt-2 text-sm text-red-600">
+                    {{ $message }}
+                </p>
+            @enderror
 
         </div>
 
@@ -59,7 +67,15 @@
                 id="password"
                 name="password"
                 type="password"
-                class="w-full rounded-2xl border border-slate-300 px-5 py-4">
+                required
+                autocomplete="new-password"
+                class="w-full rounded-2xl border border-slate-300 px-5 py-4 outline-none transition focus:border-amber-500">
+
+            @error('password')
+                <p class="mt-2 text-sm text-red-600">
+                    {{ $message }}
+                </p>
+            @enderror
 
         </div>
 
@@ -77,13 +93,15 @@
                 id="password_confirmation"
                 name="password_confirmation"
                 type="password"
-                class="w-full rounded-2xl border border-slate-300 px-5 py-4">
+                required
+                autocomplete="new-password"
+                class="w-full rounded-2xl border border-slate-300 px-5 py-4 outline-none transition focus:border-amber-500">
 
         </div>
 
         <button
             type="submit"
-            class="w-full rounded-2xl bg-amber-500 py-4 font-bold text-white">
+            class="w-full rounded-2xl bg-amber-500 py-4 font-bold text-white transition hover:bg-amber-600">
 
             Reset Password →
 

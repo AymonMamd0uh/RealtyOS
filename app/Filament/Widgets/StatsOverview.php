@@ -58,35 +58,6 @@ class StatsOverview extends StatsOverviewWidget
 
         /*
         |--------------------------------------------------------------------------
-        | Agent
-        |--------------------------------------------------------------------------
-        */
-
-        if ($user->hasRole('Agent')) {
-
-            return [
-
-                Stat::make(
-                    'My Properties',
-                    Property::where('user_id', $user->id)->count()
-                )
-                    ->description('Assigned properties')
-                    ->descriptionIcon('heroicon-m-home', IconPosition::Before)
-                    ->color('primary'),
-
-                Stat::make(
-                    'My Leads',
-                    Lead::where('assigned_to', $user->id)->count()
-                )
-                    ->description('Assigned leads')
-                    ->descriptionIcon('heroicon-m-user-group', IconPosition::Before)
-                    ->color('success'),
-
-            ];
-        }
-
-        /*
-        |--------------------------------------------------------------------------
         | Owner
         |--------------------------------------------------------------------------
         */
@@ -121,5 +92,18 @@ class StatsOverview extends StatsOverviewWidget
                 ->chart([2, 4, 6, 7, 8, 9, 10]),
 
         ];
+    }
+    public static function canView(): bool
+    {
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+            'Super Admin',
+            'Manager',
+        ]);
     }
 }

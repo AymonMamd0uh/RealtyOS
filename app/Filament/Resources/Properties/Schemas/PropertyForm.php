@@ -16,6 +16,9 @@ use App\Models\Compound;
 use App\Models\Stage;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\FileUpload;
+
 
 class PropertyForm
 {
@@ -23,140 +26,186 @@ class PropertyForm
     {
         return $schema
             ->components([
+                Section::make('General Information')
+                    ->schema([
+                        Select::make('user_id')
+                            ->label('Assigned Agent')
+                            ->relationship(
+                                'user',
+                                'name',
+                                fn($query) => $query->where(
+                                    'company_id',
+                                    auth()->user()->company_id
+                                )
+                            )
+                            ->default(auth()->id())
+                            ->disabled(fn() => auth()->user()->hasRole('Agent'))
+                            ->dehydrated()
+                            ->searchable()
+                            ->preload()
+                            ->required(),
 
-                Select::make('user_id')
-                    ->label('Assigned Agent')
-                    ->relationship(
-                        'user',
-                        'name',
-                        fn($query) => $query->where(
-                            'company_id',
-                            auth()->user()->company_id
-                        )
-                    )
-                    ->default(auth()->id())
-                    ->disabled(fn() => auth()->user()->hasRole('Agent'))
-                    ->dehydrated()
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                        TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
 
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
+                        Textarea::make('description')
+                            ->columnSpanFull()
+                            ->rows(5),
 
-                Textarea::make('description')
-                    ->columnSpanFull(),
+                        Select::make('property_type')
+                            ->options(
+                                collect(PropertyType::cases())
+                                    ->mapWithKeys(fn($case) => [
+                                        $case->value => ucfirst($case->value),
+                                    ])
+                                    ->toArray()
+                            )
+                            ->required(),
 
-                Select::make('property_type')
-                    ->options(
-                        collect(PropertyType::cases())
-                            ->mapWithKeys(fn($case) => [
-                                $case->value => ucfirst($case->value),
-                            ])
-                            ->toArray()
-                    )
-                    ->required(),
+                        Select::make('listing_type')
+                            ->options(
+                                collect(ListingType::cases())
+                                    ->mapWithKeys(fn($case) => [
+                                        $case->value => ucfirst($case->value),
+                                    ])
+                                    ->toArray()
+                            )
+                            ->required(),
+                        Select::make('status')
+                            ->options(
+                                collect(PropertyStatus::cases())
+                                    ->mapWithKeys(fn($case) => [
+                                        $case->value => ucfirst($case->value),
+                                    ])
+                                    ->toArray()
+                            )
+                            ->default(PropertyStatus::DRAFT->value)
+                            ->required(),
+                    ])
+                    ->columns(2),
+                Section::make('Location')
+                    ->schema([
+                        Select::make('city_id')
+                            ->relationship('city', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('area_id', null);
+                                $set('compound_id', null);
+                                $set('stage_id', null);
+                            })
+                            ->required(),
 
-                Select::make('listing_type')
-                    ->options(
-                        collect(ListingType::cases())
-                            ->mapWithKeys(fn($case) => [
-                                $case->value => ucfirst($case->value),
-                            ])
-                            ->toArray()
-                    )
-                    ->required(),
+                        Select::make('area_id')
+                            ->options(
+                                fn(Get $get) => Area::query()
+                                    ->where('city_id', $get('city_id'))
+                                    ->pluck('name', 'id')
+                                    ->toArray()
+                            )
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('compound_id', null);
+                                $set('stage_id', null);
+                            })
+                            ->required(),
 
-                Select::make('city_id')
-                    ->relationship('city', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('area_id', null);
-                        $set('compound_id', null);
-                        $set('stage_id', null);
-                    })
-                    ->required(),
+                        Select::make('compound_id')
+                            ->options(
+                                fn(Get $get) => Compound::query()
+                                    ->where('area_id', $get('area_id'))
+                                    ->pluck('name', 'id')
+                                    ->toArray()
+                            )
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('stage_id', null);
+                            }),
 
-                Select::make('area_id')
-                    ->options(
-                        fn(Get $get) => Area::query()
-                            ->where('city_id', $get('city_id'))
-                            ->pluck('name', 'id')
-                            ->toArray()
-                    )
-                    ->searchable()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('compound_id', null);
-                        $set('stage_id', null);
-                    })
-                    ->required(),
+                        Select::make('stage_id')
+                            ->options(
+                                fn(Get $get) => Stage::query()
+                                    ->where('compound_id', $get('compound_id'))
+                                    ->pluck('name', 'id')
+                                    ->toArray()
+                            )
+                            ->searchable(),
+                    ])
+                    ->columns(3),
+                Section::make('Property Details')
+                    ->schema([
+                        TextInput::make('price')
+                            ->numeric()
+                            ->minValue(1)
+                            ->prefix('EGP')
+                            ->required(),
 
-                Select::make('compound_id')
-                    ->options(
-                        fn(Get $get) => Compound::query()
-                            ->where('area_id', $get('area_id'))
-                            ->pluck('name', 'id')
-                            ->toArray()
-                    )
-                    ->searchable()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('stage_id', null);
-                    }),
+                        TextInput::make('built_area')
+                            ->numeric(),
 
-                Select::make('stage_id')
-                    ->options(
-                        fn(Get $get) => Stage::query()
-                            ->where('compound_id', $get('compound_id'))
-                            ->pluck('name', 'id')
-                            ->toArray()
-                    )
-                    ->searchable(),
+                        TextInput::make('land_area')
+                            ->numeric(),
 
-                TextInput::make('price')
-                    ->numeric()
-                    ->minValue(1)
-                    ->prefix('EGP')
-                    ->required(),
+                        TextInput::make('bedrooms')
+                            ->numeric()
+                            ->minValue(0),
 
-                TextInput::make('built_area')
-                    ->numeric(),
+                        TextInput::make('bathrooms')
+                            ->numeric()
+                            ->minValue(0),
 
-                TextInput::make('land_area')
-                    ->numeric(),
+                        TextInput::make('floor_number')
+                            ->numeric(),
 
-                TextInput::make('bedrooms')
-                    ->numeric()
-                    ->minValue(0),
+                        Toggle::make('is_furnished')
+                            ->default(false),
 
-                TextInput::make('bathrooms')
-                    ->numeric()
-                    ->minValue(0),
+                    ])
+                    ->columns(3),
+                Section::make('Features')
+                    ->schema([
+                        CheckboxList::make('features')
+                            ->relationship('features', 'name')
+                            ->columns(3)
+                            ->searchable()
+                            ->columnSpanFull(),
+                    ]),
+                Section::make('🔒 Internal Information')
+                    ->description('Visible only to the Owner and the assigned Agent')
+                    ->schema([
 
-                TextInput::make('floor_number')
-                    ->numeric(),
+                        TextInput::make('owner_name')
+                            ->label('Owner Name'),
 
-                Toggle::make('is_furnished')
-                    ->default(false),
-                CheckboxList::make('features')
-                    ->relationship('features', 'name')
-                    ->columns(3)
-                    ->searchable()
-                    ->columnSpanFull(),
-                Select::make('status')
-                    ->options(
-                        collect(PropertyStatus::cases())
-                            ->mapWithKeys(fn($case) => [
-                                $case->value => ucfirst($case->value),
-                            ])
-                            ->toArray()
-                    )
-                    ->default(PropertyStatus::DRAFT->value)
-                    ->required(),
+                        TextInput::make('owner_phone')
+                            ->label('Owner Phone')
+                            ->tel(),
+
+                        TextInput::make('owner_email')
+                            ->label('Owner Email')
+                            ->email(),
+                        TextInput::make('group_name')
+                            ->label('Group')
+                            ->maxLength(50),
+
+                        TextInput::make('building_number')
+                            ->label('Building')
+                            ->maxLength(50),
+
+                        TextInput::make('unit_number')
+                            ->label('Unit')
+                            ->maxLength(50),
+                        Textarea::make('internal_notes')
+                            ->label('Internal Notes')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
+                    ])
+                    ->columns(2),
             ]);
     }
 }

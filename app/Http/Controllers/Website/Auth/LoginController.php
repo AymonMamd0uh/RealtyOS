@@ -23,7 +23,6 @@ class LoginController extends Controller
             $credentials,
             $request->boolean('remember')
         )) {
-
             throw ValidationException::withMessages([
                 'email' => 'The provided credentials are incorrect.',
             ]);

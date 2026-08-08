@@ -9,7 +9,8 @@ use App\Http\Controllers\Website\Auth\RegisterController;
 use App\Http\Controllers\Website\Auth\VerifyEmailController;
 use App\Http\Controllers\Website\Auth\ResetPasswordController;
 use App\Http\Controllers\Website\Auth\ForgotPasswordController;
-
+use App\Http\Controllers\LeadExportController;
+use App\Http\Controllers\PropertyExportController;
 /*
 |--------------------------------------------------------------------------
 | Marketing Website
@@ -76,7 +77,6 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify']
 Route::post('/email/verification-notification', [VerifyEmailController::class, 'send'])
     ->middleware(['auth', 'throttle:6,1'])
     ->name('verification.send');
-
 /*
 |--------------------------------------------------------------------------
 | Subscription
@@ -111,3 +111,17 @@ Route::post(
     '/billing/paymob/webhook',
     [SubscriptionController::class, 'webhook']
 )->name('paymob.webhook');
+
+
+
+
+
+Route::middleware('auth')->get(
+    '/admin/leads/export-direct',
+    [LeadExportController::class, 'download']
+)->name('leads.export.direct');
+
+Route::middleware('auth')->get(
+    '/admin/properties/export-direct',
+    [PropertyExportController::class, 'download']
+)->name('properties.export.direct');

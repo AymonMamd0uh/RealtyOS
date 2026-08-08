@@ -10,7 +10,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class FollowUpStats extends StatsOverviewWidget
 {
     protected static ?int $sort = 2;
-protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
     protected function getStats(): array
     {
         $user = auth()->user();
@@ -59,6 +59,15 @@ protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {
-        return auth()->check();
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+            'Super Admin',
+            'Manager',
+        ]);
     }
 }

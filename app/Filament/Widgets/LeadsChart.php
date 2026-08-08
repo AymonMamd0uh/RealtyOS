@@ -80,4 +80,17 @@ class LeadsChart extends ChartWidget
     {
         return '320px';
     }
+    public static function canView(): bool
+    {
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+            'Super Admin',
+            'Manager',
+        ]);
+    }
 }

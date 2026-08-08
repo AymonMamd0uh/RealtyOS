@@ -15,9 +15,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
-    use HasFactory, Notifiable, HasRoles;
+   use HasFactory, Notifiable, HasRoles, MustVerifyEmailTrait;
 
     protected $fillable = [
         'company_id',
@@ -73,4 +74,5 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->is_active
             && $this->roles()->exists();
     }
+
 }

@@ -11,6 +11,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use App\Models\Lead;
+use Illuminate\Validation\Rules\Unique;
 
 class LeadForm
 {
@@ -26,7 +28,17 @@ class LeadForm
 
                         TextInput::make('phone')
                             ->tel()
-                            ->required(),
+                            ->required()
+                            ->unique(
+                                table: 'leads',
+                                column: 'phone',
+                                ignoreRecord: true,
+                                modifyRuleUsing: fn(Unique $rule) => $rule
+                                    ->where('company_id', auth()->user()->company_id)
+                            )
+                            ->validationMessages([
+                                'unique' => 'This lead already exists with another agent.',
+                            ]),
 
                         TextInput::make('email')
                             ->email(),

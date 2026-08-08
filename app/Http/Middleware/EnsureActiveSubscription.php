@@ -13,22 +13,27 @@ class EnsureActiveSubscription
         protected SubscriptionService $subscriptionService
     ) {}
 
-    public function handle(Request $request, Closure $next): Response
-    {
-        $user = auth()->user();
+public function handle(Request $request, Closure $next): Response
+{
+    $user = auth()->user();
 
-        if (! $user) {
-            return redirect()->route('login');
-        }
+    if (! $user) {
+        return redirect()->route('login');
+    }
 
-        if ($user->hasRole('Platform Admin')) {
-            return $next($request);
-        }
-
-        if (! $this->subscriptionService->hasAccess($user->company)) {
-            return redirect()->route('subscription.expired');
-        }
-
+    if ($user->hasRole('Platform Admin')) {
         return $next($request);
     }
+
+    // تخطى أول دخول بعد التحقق من الإيميل
+    if (session()->pull('just_verified')) {
+        return $next($request);
+    }
+
+    if (! $this->subscriptionService->hasAccess($user->company)) {
+        return redirect()->route('subscription.expired');
+    }
+
+    return $next($request);
+}
 }

@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers\Website\Auth;
 
+use App\Actions\Auth\RegisterCompanyAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterCompanyRequest;
-use App\Models\Company;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use App\Actions\Auth\RegisterCompanyAction;
 use App\Models\Plan;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -20,32 +16,22 @@ class RegisterController extends Controller
 
         return view('website.auth.register', compact('plan'));
     }
+
     public function store(
         RegisterCompanyRequest $request,
         RegisterCompanyAction $registerCompanyAction
     ) {
-        DB::transaction(function () use ($request, $registerCompanyAction) {
-
-            $registerCompanyAction->execute(
+        $user = DB::transaction(function () use ($request, $registerCompanyAction) {
+            return $registerCompanyAction->execute(
                 $request->validated()
             );
         });
 
+        // إرسال رسالة التحقق باستخدام Laravel Notification
+        $user->sendEmailVerificationNotification();
+
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
-    }
-    private function generateUniqueSlug(string $name): string
-    {
-        $slug = Str::slug($name);
-        $originalSlug = $slug;
-        $counter = 1;
-
-        while (Company::where('slug', $slug)->exists()) {
-            $slug = "{$originalSlug}-{$counter}";
-            $counter++;
-        }
-
-        return $slug;
+        return redirect()->route('verification.notice');
     }
 }

@@ -101,6 +101,15 @@ class LeadStats extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->check();
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return auth()->user()->hasAnyRole([
+            'Platform Admin',
+            'Owner',
+            'Super Admin',
+            'Manager',
+        ]);
     }
 }
