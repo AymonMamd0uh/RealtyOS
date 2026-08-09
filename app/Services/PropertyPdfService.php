@@ -33,17 +33,19 @@ class PropertyPdfService
 
         $fileName = $tempDirectory . DIRECTORY_SEPARATOR .
             'property-' . $property->id . '.pdf';
-        $tempDirectory = storage_path('app/temp');
 
-        if (! is_dir($tempDirectory)) {
-            mkdir($tempDirectory, 0755, true);
-        }
-
-        $fileName = $tempDirectory . DIRECTORY_SEPARATOR .
-            'property-' . $property->id . '.pdf';
         Browsershot::html($html)
-            ->setChromePath('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
-            ->setNodeBinary('C:\\Program Files\\nodejs\\node.exe')
+            ->setChromePath('/usr/bin/google-chrome')
+            ->setNodeBinary('/usr/bin/node')
+            ->addChromiumArguments([
+                'no-sandbox',
+                'disable-setuid-sandbox',
+            ])
+            ->setEnvironmentOptions([
+                'HOME' => '/tmp',
+                'XDG_CONFIG_HOME' => '/tmp/.config',
+                'XDG_CACHE_HOME' => '/tmp/.cache',
+            ])
             ->showBackground()
             ->format('A4')
             ->margins(10, 10, 10, 10)
