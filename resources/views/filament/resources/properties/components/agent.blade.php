@@ -1,33 +1,29 @@
-<div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+<h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">
 
-    <h2 class="text-xl font-bold mb-6">
+    Assigned Agent
 
-        Assigned Agent
+</h2>
 
-    </h2>
+<div class="flex items-center gap-5">
 
-    <div class="flex items-center gap-5">
+    <div
+        class="flex h-20 w-20 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/40 text-3xl font-bold text-primary-700 dark:text-primary-300">
 
-        <div
-            class="flex h-20 w-20 items-center justify-center rounded-full bg-primary-100 text-3xl font-bold">
+        {{ strtoupper(substr($record->user?->name ?? 'A',0,1)) }}
 
-            {{ strtoupper(substr($record->user?->name ?? 'A',0,1)) }}
+    </div>
+
+    <div>
+
+        <div class="text-xl font-semibold text-gray-900 dark:text-white">
+
+            {{ $record->user?->name }}
 
         </div>
 
-        <div>
+        <div class="text-gray-500 dark:text-gray-400 mt-2">
 
-            <div class="text-xl font-semibold">
-
-                {{ $record->user?->name }}
-
-            </div>
-
-            <div class="text-gray-500 mt-2">
-
-                {{ $record->company?->name }}
-
-            </div>
+            {{ $record->company?->name }}
 
         </div>
 

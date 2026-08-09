@@ -1,31 +1,21 @@
-<div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+<h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">
+    Property Actions
+</h2>
 
-    <h2 class="text-xl font-bold mb-6">
-        Property Actions
-    </h2>
+<div class="flex flex-wrap gap-4">
 
-    <div class="flex flex-wrap gap-4">
+    <a
+        href="{{ route('properties.pdf', ['property' => $record->id]) }}"
+        class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 font-semibold text-white transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
+    >
+        📄 Download PDF
+    </a>
 
-<button
-    type="button"
-    onclick="window.open('{{ route('properties.pdf',$record) }}','_blank')"
-    class="rounded-xl bg-red-600 hover:bg-red-700 px-6 py-3 text-white font-semibold">
-
-    📄 Download PDF
-
-</button>   
-
-<button
-    type="button"
-    onclick="window.open('{{ route('properties.images', $record) }}', '_blank')"
-    class="rounded-xl bg-gray-800 hover:bg-black px-6 py-3 text-white font-semibold transition">
-
-    📦 Download Images
-
-</button>
-
-
-
-    </div>
+    <a
+        href="{{ route('properties.images', ['property' => $record->id]) }}"
+        class="inline-flex items-center gap-2 rounded-xl bg-gray-100 px-5 py-3 font-semibold text-gray-900 transition hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+    >
+        📦 Download Images
+    </a>
 
 </div>
